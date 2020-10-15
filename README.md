@@ -9,7 +9,7 @@ Spring Boot + Mybatis + Maven + git
 introduction 
 
 # example
-(example)[https://thisisz.cn/emp]
+[example](https://thisisz.cn/emp)
 may try use project 
 
 
