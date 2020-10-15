@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CRUD</title>
+    <link rel="stylesheet" th:href="@{webjars/bootstrap/4.3.1/css/bootstrap.min.css}" href="../static/asserts/css/bootstrap.min.css">
+
+</head>
+<body>
+<!-- Modal 员工添加的模态框-->
+<div class="modal fade" id="empModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel">员工添加</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+<!--                @{/empEmp(pn=${emps.getPageNum()})}-->
+                <form class="form" id="ajaxform" method="post" action="/addEmp">
+					<div class="row">
+						<label class="col-sm-2 control-label">姓名:</label>
+						<div class="col-sm-10">
+						  <input type="text" name="lastName" class="form-control" id="empName_add_input" placeholder="empName">
+						  <span class="help-block"></span>
+						</div>
+					</div><br/>
+
+					<div class="row">
+						<label class="col-sm-2 control-label">邮箱:</label>
+						<div class="col-sm-10">
+						  <input type="email" name="email" class="form-control" id="email_add_input" placeholder="thissriz@163.com">
+						  <span class="help-block"></span>
+						</div>
+					</div><br/>
+					<div class="row">
+						<label class="col-sm-2 control-label">性别:</label>
+						<div class="col-sm-2">
+						  <label class="radio">
+							  <input type="radio" name="gender" id="gender1_add_input" value="0" checked="checked"> 男
+							</label>
+						</div>
+						<div class="col-sm-2">
+							<label class="radio-inline">
+							  <input type="radio" name="gender" id="gender2_add_input" value="1"> 女
+							</label>
+						</div>
+					</div><br/>
+					<div class="row">
+						<label class="col-sm-2 control-label">部门:</label>
+						<div class="col-sm-4">
+							<!-- 部门提交部门id即可 -->
+							<select class="form-control" name="dId">
+                                <option th:selected="${depts!=null}" th:value="${dept.id}" th:each="dept:${depts}" th:text="${dept.name}">1</option>
+							</select>
+						</div>
+					</div>
+				</form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" id="emp-save-btn" class="btn btn-primary">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 员工编辑模态框-->
+<div class="modal fade" id="empModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="myModalLabel1">员工编辑</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <form class="form" method="post" th:action="@{/update(pn=${emps.getPageNum()})}">
+                    <div class="row">
+                        <label class="col-sm-2 control-label">姓名:</label>
+                        <div class="col-sm-10">
+                            <input class="form-control " id="emp_id_put" type="hidden" name="id" />
+                            <input class="form-control " id="LastNameput" type="hidden" name="lastName" />
+                            <label name="lastName" id="LastName" class="control-label LastName" >
+                            <span class="help-block"></span></label>
+                        </div>
+                    </div><br/>
+                    <div class="row">
+                        <label class="col-sm-2 control-label">邮箱:</label>
+                        <div class="col-sm-10">
+                            <input type="email" name="email" class="form-control" id="email_update_input" placeholder="thissirz@163.com">
+                            <span class="help-block"></span>
+                        </div>
+                    </div><br/>
+                    <div class="row">
+                        <label class="col-sm-2 control-label">性别:</label>
+                        <div class="col-sm-2">
+                            <label class="radio">
+                                <input type="radio" name="gender" id="gender1_update_input" value="0" checked="checked"> 男
+                            </label>
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="gender2_update_input" value="1"> 女
+                            </label>
+                        </div>
+                    </div><br/>
+                    <div class="row">
+                        <label class="col-sm-2 control-label">部门:</label>
+                        <div class="col-sm-4">
+                            <!-- 部门提交部门id即可 -->
+                            <select class="form-control" name="dId">
+                                <option th:selected="${depts!=null}" th:value="${dept.id}" th:each="dept:${depts}" th:text="${dept.name}">1</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="submit" id="emp-update-btn" class="btn btn-primary save_update">修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="container">
+<!--        标题栏        bootstrap 是全部分为一行一行的-->
+        <div class="row">
+            <div class="col-lg-12">
+                <h1>SSM-CRUD</h1>
+            </div>
+        </div>
+<!--        添加栏-->
+        <div class="row">
+            <div class="col-md-4 offset-md-9">
+                <button type="button" class="btn btn-primary" id="emp_add_btn">添加</button>
+                <button type="button" th:attr="dels_uri=@{/delsemp}" class="btn btn-danger deletesBtn" id="emp_del_btn">删除</button>
+            </div>
+        </div>
+        <br/>
+<!--        信息栏-->
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" class="che_all" id="che_all"/> </th>
+                            <th scope="col">编号</th>
+                            <th scope="col">姓名</th>
+                            <th scope="col">邮箱</th>
+                            <th scope="col">性别</th>
+                            <th scope="col">部门名称</th>
+                            <th scope="col">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="emp:${emps.getList()}">
+                            <th><input type="checkbox" class="che_time" th:value="${emp.getId()}" id="che_time"/> </th>
+                            <td th:text="${emp.getId()}" name="empid"></td>
+                            <td th:text="${emp.getLastName()}" >lastName</td>
+                            <td th:text="${emp.getEmail()}">email</td>
+                            <td th:text="${emp.getGender()}==0?'男':'女'">gender</td>
+                            <td th:text="${emp.department.name}" >d_id</td>
+                            <td>
+                                <button th:attr="update_uri=${emp.getId()}" th:attrappend="update_name=${emp.getLastName()}" class="btn btn-info btn-sm updateBtn">编辑</button>
+                                <button th:attr="del_uri=@{/delEmp(id=${emp.getId()},pn=${emps.getPageNum()})}" th:attrappend="del_name=${emp.getLastName()}" class="btn btn-danger btn-sm deleteBtn" >删除</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <form id="deleteEmpForm" method="post">
+                    <input  type="hidden" name="_method" value="delete"/>
+                </form>
+            </div>
+        </div>
+<!--        分页栏-->
+        <div class="row" >
+            <div class="col-md-6">
+                当前页是第 <code  id="id" th:value="${emps.getPageNum()}">[[${emps.getPageNum()}]]</code> 页,总页数有 <code>[[${emps.getPages()}]]</code> 页,一共有 <code>[[${emps.getTotal()}]]</code> 条记录数
+            </div>
+        </div>
+        <div class="row" >
+            <div class="col-md-6 offset-md-8">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination">
+                        <li class="page-item"><a class="page-link" href="#" th:href="@{/emps}">首页</a></li>
+                        <li class="page-item"><a class="page-link" href="#" th:href="@{/emps(pn=${emps.getPrePage()})}">&laquo;</a></li>
+                        <div th:each="page:${emps.getNavigatepageNums()}">
+                            <li th:class="${emps.getPageNum()}==${page}?'page-item active':'page-item'" class="page-item"><a class="page-link" href="#" th:href="@{/emps(pn=${page})}" th:text="${page}">1</a></li>
+                        </div>
+                        <li class="page-item"><a class="page-link" href="#" th:href="@{/emps(pn=${emps.getNextPage()})}" >&raquo;</a></li>
+                        <li class="page-item"><a class="page-link" href="#" th:href="@{/emps(pn=${emps.getPages()})}">尾页</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </div>
+<script type="text/javascript" th:src="@{/asserts/js/jquery-3.4.1.min.js}" src="../static/asserts/js/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/4.3.1/js/bootstrap.min.js}" src="../static/asserts/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+    $(".deleteBtn").click(function(){
+        if(confirm("确认删除【"+$(this).attr("del_name")+"】吗？")) {
+            $("#deleteEmpForm").attr("action", $(this).attr("del_uri")).submit();
+            return false;
+        }
+    });
+
+    //$(".class properties")可以多选   $("#id properties")不能多选
+    $(".che_all").click(function () {
+        $(".che_time").prop("checked",$(this).prop("checked"));
+    });
+    //复选框的选中 等于5的时候全选
+    $(".che_time").click(function () {
+        var falg = $(".che_time:checked").length==5;
+        $("#che_all").prop("checked",falg);
+    });
+    $("#emp_del_btn").click(function () {
+        var empName = "";
+        var empId = "";
+        var id=$("#id").text();
+       $.each($(".che_time:checked"),function () {
+          empName += $(this).parents("tr").find("td:eq(1)").text()+",";
+          empId += $(this).parents("tr").find("td:eq(0)").text()+",";
+       });
+        empName=empName.substring(0,empName.length-1);
+        empId=empId.substring(0,empId.length-1);
+        if(empName==""){
+            alert("请选择需要删除的员工！");
+            return;
+        }
+        if(confirm("确认删除【"+empName+"】吗？")){
+           $.post("/emp/delEmps",{empId:empId,pn:id},function(data) {
+               location.assign("/emp/emps?pn="+id);
+            });
+        }
+    });
+    function isNull(){
+        var empName = $("#empName_add_input").val();
+        var reEmpName = /(^[a-zA-Z0-9_-]{6,16}$)|(^[u2E80-\u9FFF]{2,5})/;
+        if(!reEmpName.test(empName)){
+            alert("用户名可以是2-5位中文或者是6-16位英文和数字组合!");
+            return false;
+        };
+        var email = $("#email_add_input").val();
+        var regEmail = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+        if(!regEmail.test(email)){
+            alert("邮箱格式不正确！");
+            return false;
+        };
+        return true;
+    }
+
+    $("#emp-save-btn").click(function () {
+        if(!isNull()){
+        }else{
+           $.ajax({
+               url:"/emp/addEmp",
+               type:"POST",
+               data:$("#empModal1 form").serialize(),
+               success:function (result) {
+                   $("#empModal1").modal('hide');
+                   location.assign("/emp/addEmp");
+               }
+           });
+        };
+    });
+    $("#emp-update-btn").click(function () {
+        var email = $("#email_update_input").val();
+        var regEmail = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+        if(!regEmail.test(email)){
+            alert("邮箱格式不正确！");
+        }else{
+            var id=$("#id").text();
+            $.ajax({
+                url:"/emp/update",
+                type:"POST",
+                data:$("#empModal2 form").serialize(),
+                success:function (result) {
+                    $("#empModal2").modal('hide');
+                    location.assign("/emp/emps?pn="+id);
+                }
+            });
+        }
+    });
+
+    // update 模态框，给模态框赋值
+    $(".updateBtn").click(function(){
+        var name=$(this).attr("update_name");
+        var last = document.getElementById("LastName");
+        last.innerHTML=name;
+        var put = document.getElementById("LastNameput").value=name;
+        document.getElementById("emp_id_put").value=$(this).attr("update_uri");
+
+        $("#empModal2").modal({
+            backdrop:"static"
+        });
+    });
+    // 开启添加模态框
+    $("#emp_add_btn").click(function(){
+        $("#empModal1").modal({
+            backdrop:"static"
+        });
+    });
+</script>
+</body>
+</html>
