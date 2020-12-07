@@ -29,7 +29,7 @@ public class EmpController {
         List<Department> departments = departmentService.listAllDept();
         model.addAttribute("depts",departments);
         model.addAttribute("emps",pageInfo);
-        return "/employee";
+        return "employee";
     }
     @PostMapping("/update")
     public String update(Employee employee) throws IOException {
